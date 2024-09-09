@@ -86,3 +86,21 @@ const checkIO = async (MAC, IOStatus) => {
         }
     });
 };
+
+const CHECK_INTERVAL = 10000; // Check every 10 seconds
+const DISCONNECT_THRESHOLD = 60000; // 1 minute in milliseconds
+
+setInterval(async () => {
+    const currentTime = new Date();
+
+    const [results] = await conn.query("SELECT Status, StatusID, LastestTime FROM devices_status");
+
+    results.forEach(async (status) => {
+        const timeDifference = currentTime - new Date(status.LastestTime);
+        if (timeDifference > DISCONNECT_THRESHOLD) {
+            await conn.query("UPDATE devices_status SET Status = 0 WHERE StatusID = ?", status.StatusID);
+        } else {
+            await conn.query("UPDATE devices_status SET Status = 1 WHERE StatusID = ?", status.StatusID);
+        }
+    });
+}, CHECK_INTERVAL);
