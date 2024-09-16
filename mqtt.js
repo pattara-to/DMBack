@@ -70,10 +70,11 @@ const setIO = async (deviceName, IOStatus) => {
 const setMAC = async (deviceName, MAC) => {
     [response] = await conn.query(`SELECT DeviceName FROM devices_status WHERE DeviceName = "${deviceName}"`);
     if (response.length == 0) {
-        await conn.query(`INSERT INTO devices_status (DeviceName, Status, MAC) VALUES ("${deviceName}", ${true}, "${MAC}")`);
+        await conn.query(`UPDATE devices_status SET DeviceName = "${deviceName}", Status = ${true}
+            WHERE MAC = '${MAC}'`);
     } else {
-        await conn.query(`UPDATE devices_status SET Status = ${1}, MAC = "${MAC}"
-        WHERE DeviceName = '${deviceName}'`);
+        await conn.query(`UPDATE devices_status SET Status = ${1}
+        WHERE MAC = '${MAC}'`);
     }
 };
 

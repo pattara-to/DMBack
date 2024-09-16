@@ -144,6 +144,7 @@ app.post("/devices", async (req, res) => {
             `INSERT INTO devices (Name, MAC, Location, Role, Description, UserID) 
             VALUES ("${name}", "${MAC}", "${location}", "${role}", "${description}", ${user.userID})`
         );
+        await conn.query("INSERT INTO devices_status (DeviceName, Status, IOStatus, MAC) VALUES (?, ?, ?, ?)", ["", false, "0000", MAC]);
         res.send("Insert Device Successfully");
     } catch (error) {
         console.log("error", error);
