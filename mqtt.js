@@ -18,7 +18,7 @@ const initMySQL = async () => {
 
 client.on("connect", async () => {
     await initMySQL();
-    console.log(`Connected to broker. Subscribing to topic: ${topic}`);
+    console.log("Connected to broker.");
     client.subscribe(topic, (err) => {
         if (!err) {
             console.log(`Subscribed to topic: ${topic}`);
@@ -91,7 +91,7 @@ const checkIO = async (MAC, IOStatus) => {
 };
 
 const CHECK_INTERVAL = 10000; // Check every 10 seconds
-const DISCONNECT_THRESHOLD = 60000; // 1 minute in milliseconds
+const DISCONNECT_THRESHOLD = 120000; // 2 minute in milliseconds
 
 setInterval(async () => {
     const currentTime = new Date();
