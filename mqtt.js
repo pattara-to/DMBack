@@ -59,9 +59,11 @@ client.on("error", (err) => {
 const setIO = async (deviceName, IOStatus) => {
     [response] = await conn.query(`SELECT MAC FROM devices_status WHERE DeviceName = "${deviceName}"`);
     if (response.length == 0) {
-        await conn.query(`INSERT INTO devices_status (DeviceName, Status, IOStatus) VALUES ("${deviceName}", ${true}, "${IOStatus}")`);
+        await conn.query(
+            `INSERT INTO devices_status (DeviceName, Status, IOStatus, LastestTime) VALUES ("${deviceName}", ${true}, "${IOStatus}", ${Date.now()})`
+        );
     } else {
-        await conn.query(`UPDATE devices_status SET Status = ${1}, IOStatus = "${IOStatus}"
+        await conn.query(`UPDATE devices_status SET Status = ${1}, IOStatus = "${IOStatus}", LastestTime = NOW()
         WHERE DeviceName = '${deviceName}'`);
     }
     await checkIO(response[0].MAC, IOStatus);
