@@ -42,6 +42,9 @@ app.post("/register", async (req, res) => {
 app.post("/login", async (req, res) => {
     const { email, password } = req.body;
     const [result] = await conn.query("SELECT id, password from users WHERE email = ?", email);
+    if (result.length == 0) {
+        return res.status(400).send("Wrong Email");
+    }
     const match = await bcrypt.compare(password, result[0].password);
     if (!match) {
         return res.status(400).send("Wrong Email or Password");

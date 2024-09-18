@@ -58,25 +58,19 @@ client.on("error", (err) => {
 
 const setIO = async (deviceName, IOStatus) => {
     [response] = await conn.query(`SELECT MAC FROM devices_status WHERE DeviceName = "${deviceName}"`);
-    if (response.length == 0) {
-        await conn.query(
-            `INSERT INTO devices_status (DeviceName, Status, IOStatus, LastestTime) VALUES ("${deviceName}", ${true}, "${IOStatus}", ${Date.now()})`
-        );
-    } else {
+    if (response.length != 0) {
         await conn.query(`UPDATE devices_status SET Status = ${1}, IOStatus = "${IOStatus}", LastestTime = NOW()
         WHERE DeviceName = '${deviceName}'`);
+        await checkIO(response[0].MAC, IOStatus);
     }
-    await checkIO(response[0].MAC, IOStatus);
 };
 
 const setMAC = async (deviceName, MAC) => {
     [response] = await conn.query(`SELECT DeviceName FROM devices_status WHERE DeviceName = "${deviceName}"`);
     if (response.length == 0) {
-        await conn.query(`UPDATE devices_status SET DeviceName = "${deviceName}", Status = ${true}
-            WHERE MAC = '${MAC}'`);
+        await conn.query("INSERT INTO devices_status (DeviceName, MAC) VALUES (?,?,?)", [deviceName, MAC]);
     } else {
-        await conn.query(`UPDATE devices_status SET Status = ${1}
-        WHERE MAC = '${MAC}'`);
+        await conn.query("UPDATE devices_status SET MAC = ? WHERE DeviceName = ?", [MAC, deviceName]);
     }
 };
 
