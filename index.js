@@ -93,6 +93,19 @@ app.post("/edit-user", async (req, res) => {
     }
 });
 
+app.post("/edit-linetoken", async (req, res) => {
+    try {
+        const { lineToken } = req.body;
+        const user = isLogin(req);
+        if (!user) {
+            throw { message: "Auth Fail" };
+        }
+        await conn.query("UPDATE users SET LineToken = ? WHERE ID = ?", [lineToken, user.userID]);
+    } catch (error) {
+        console.log("error", error);
+    }
+});
+
 app.get("/devices", async (req, res) => {
     try {
         const user = isLogin(req);
