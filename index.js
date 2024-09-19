@@ -139,7 +139,7 @@ app.get("/device/:id", async (req, res) => {
             ON devices.MAC = devices_status.MAC
             LEFT JOIN users
             ON devices.UserID = users.id
-            WHERE email = "${user.email}"`
+            WHERE email = "${params.id}"`
         );
         res.send(result[0]);
     } catch (error) {
