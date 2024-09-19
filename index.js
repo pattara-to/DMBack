@@ -79,13 +79,12 @@ app.post("/edit-user", async (req, res) => {
         if (!user) {
             throw { message: "Auth Fail" };
         }
-        await conn.query("UPDATE users SET Email = ?, Username = ?, Company = ?, Phone = ?, Address = ?, LineToken = ? WHERE ID = ?", [
+        await conn.query("UPDATE users SET Email = ?, Username = ?, Company = ?, Phone = ?, Address = ? WHERE ID = ?", [
             email,
             username,
             company,
             phone,
             address,
-            lineToken,
             user.userID,
         ]);
     } catch (error) {
@@ -160,11 +159,14 @@ app.post("/devices", async (req, res) => {
             `INSERT INTO devices (Name, MAC, Location, Role, Description, UserID) 
             VALUES ("${name}", "${MAC}", "${location}", "${role}", "${description}", ${user.userID})`
         );
-        await conn.query("INSERT INTO devices_status (DeviceName, Status, IOStatus, MAC) VALUES (?, ?, ?, ?)", ["", false, "0000", MAC]);
+        await conn.query("INSERT INTO devices_status (Status, IOStatus, MAC) VALUES (?, ?, ?)", [false, "0000", MAC]);
         res.send("Insert Device Successfully");
     } catch (error) {
+        if (error.code == "ER_DUP_ENTRY") {
+            res.send("Duplicate MAC");
+        }
+        res.send("Pika Pika");
         console.log("error", error);
-        res.status(401).send("Session Expired");
     }
 });
 
