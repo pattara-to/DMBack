@@ -139,7 +139,7 @@ app.get("/device/:id", async (req, res) => {
             ON devices.MAC = devices_status.MAC
             LEFT JOIN users
             ON devices.UserID = users.id
-            WHERE email = "${params.id}"`
+            WHERE DeviceID = "${req.params.id}"`
         );
         res.send(result[0]);
     } catch (error) {
@@ -164,8 +164,9 @@ app.post("/devices", async (req, res) => {
     } catch (error) {
         if (error.code == "ER_DUP_ENTRY") {
             res.send("Duplicate MAC");
+        } else {
+            res.send("Pika Pika");
         }
-        res.send("Pika Pika");
         console.log("error", error);
     }
 });
