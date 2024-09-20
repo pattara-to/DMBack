@@ -74,21 +74,21 @@ app.get("/user", async (req, res) => {
 
 app.post("/edit-user", async (req, res) => {
     try {
-        const { email, username, company, phone, address, lineToken } = req.body;
+        const { email, username, company, phone, address, lineToken, ProfilePic } = req.body;
         const user = isLogin(req);
-        if (!user) {
-            throw { message: "Auth Fail" };
-        }
-        await conn.query("UPDATE users SET Email = ?, Username = ?, Company = ?, Phone = ?, Address = ? WHERE ID = ?", [
-            email,
-            username,
-            company,
-            phone,
-            address,
-            user.userID,
-        ]);
+        const query = ProfilePic
+            ? "UPDATE users SET Email = ?, Username = ?, Company = ?, Phone = ?, Address = ?, ProfilePic = ? WHERE ID = ?"
+            : "UPDATE users SET Email = ?, Username = ?, Company = ?, Phone = ?, Address = ? WHERE ID = ?";
+
+        const params = ProfilePic
+            ? [email, username, company, phone, address, ProfilePic, user.userID]
+            : [email, username, company, phone, address, user.userID];
+
+        await conn.query(query, params);
+        res.send("Edit User Successfully");
     } catch (error) {
-        console.log("error", error);
+        console.error("Error in /edit-user:", error);
+        res.status(500).send("An error occurred");
     }
 });
 
@@ -164,8 +164,6 @@ app.post("/devices", async (req, res) => {
     } catch (error) {
         if (error.code == "ER_DUP_ENTRY") {
             res.send("Duplicate MAC");
-        } else {
-            res.send("Pika Pika");
         }
         console.log("error", error);
     }
